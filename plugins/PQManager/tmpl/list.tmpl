@@ -28,6 +28,16 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="system_msg">
+    <mt:if name="no_pq">
+        <mtapp:statusmsg
+            id="no_pq"
+            class="error">
+            It appears that your have never used publish queue before.
+            To enable publish queue, set any template to publish 
+            "Via Publish Queue" and then save and publish that template. 
+            Then return to this screen to see everything humming along.
+        </mtapp:statusmsg>
+    </mt:if>
     <mt:if name="is_deleted">
         <mtapp:statusmsg
             id="saved_deleted"

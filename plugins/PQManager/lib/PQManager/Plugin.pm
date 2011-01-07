@@ -117,38 +117,46 @@ sub mode_list_queue {
     my $fm = MT::TheSchwartz::FuncMap->load(
         {funcname => 'MT::Worker::Publish'});
 
-    $fm or return $app->error(
-        'It appears that your have never used publish queue before. '
-        .'To enable publish queue, set any template to publish '
-        .'"Via Publish Queue" and then save and publish that template. '
-        .'Then return to this screen to see everything humming along.');
+    my (%terms, %args, $params);
 
-    # %terms is used in case you want to filter the query that will fetch
-    # the items from the database that correspond to the rows of the table
-    # being rendered to the screen
-    my %terms = ( funcid => $fm->funcid );
+    # If $fm is empty, that means there are no templates set to publish 
+    # through the Publish Queue, so display a message to the user about 
+    # this.
+    if (!$fm) {
+        $params = {
+            'no_pq' => 1,
+        };
+    }
+    
+    # Publish Queue is being used--load any jobs and show them to the user.
+    else {
+        # %terms is used in case you want to filter the query that will fetch
+        # the items from the database that correspond to the rows of the table
+        # being rendered to the screen
+        %terms = ( funcid => $fm->funcid );
 
-    # %args is used in case you want to sort or otherwise modify the 
-    # query arguments of the table, e.g. the sort order or direction of
-    # the query associated with the data being displayed in the table.
-    my $clause = ' = ts_job_uniqkey';
-    my %args = (
-        sort  => [
-                   { column => "priority", desc => "DESC" },
-                   { column => "insert_time", }
-               ],
-        direction => 'descend',
-        join => MT::FileInfo->join_on( undef, { id => \$clause }),
-    );
+        # %args is used in case you want to sort or otherwise modify the 
+        # query arguments of the table, e.g. the sort order or direction of
+        # the query associated with the data being displayed in the table.
+        my $clause = ' = ts_job_uniqkey';
+        %args = (
+            sort  => [
+                       { column => "priority", desc => "DESC" },
+                       { column => "insert_time", }
+                   ],
+            direction => 'descend',
+            join => MT::FileInfo->join_on( undef, { id => \$clause }),
+        );
 
-    # %params is an addition hash of input parameters into the template
-    # and can be used to hold an arbitrary set of name/value pairs that
-    # can be displayed in your template.
-    my $params = {
-        'is_deleted'  => $q->param('deleted')  ? 1 : 0,
-        'is_priority' => $q->param('priority') ? 1 : 0,
-        ($q->param('priority') ? ('priority' => $q->param('priority')) : ())
-    };
+        # %params is an addition hash of input parameters into the template
+        # and can be used to hold an arbitrary set of name/value pairs that
+        # can be displayed in your template.
+        $params = {
+            'is_deleted'  => $q->param('deleted')  ? 1 : 0,
+            'is_priority' => $q->param('priority') ? 1 : 0,
+            ($q->param('priority') ? ('priority' => $q->param('priority')) : ())
+        };
+    }
 
     # Fetch an instance of the current plugin using the plugin's key.
     # This is done as a convenience only.
