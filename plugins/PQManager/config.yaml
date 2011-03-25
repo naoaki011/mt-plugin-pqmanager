@@ -1,10 +1,11 @@
 id: PQManager
 name: Publish Queue Manager
 description: Provides a management console for Publish Queue.
-version: 0.98
+version: 1.0
 author_name: Byrne Reese
 author_link: http://www.majordojo.com/
-plugin_link: http://www.majordojo.com/projects/publish-queue-manager.php
+plugin_link: http://www.majordojo.com/projects/movable-type/publish-queue-manager/
+static_version: 1
 
 applications:
   cms:
@@ -24,4 +25,7 @@ applications:
         order: 1000
         mode: PQManager.list
         view: system
-
+      system:pqueue:
+        label: Publish Queue
+        order: 600
+        mode: PQManager.list
