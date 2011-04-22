@@ -8,6 +8,13 @@ use MT::Util qw( relative_date epoch2ts iso2ts );
 use warnings;
 use Carp;
 
+sub status_job_queue {
+    my $app = shift;
+    my ($ctx) = @_;
+    my $blog = $app->can('blog') ? $app->blog : $ctx->stash('blog');
+    return MT->model('ts_job')->count();
+}
+
 sub mode_delete {
     my $app = shift;
     $app->validate_magic or return;
